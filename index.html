@@ -1,6 +1,7 @@
 <html>
 	<head>
 	<script>
+/* Determina cual imagen se debe mostrar, dada una fila y una columna */	
 function cualImagen( fila, col ){
 	var imagenes = [ 
 		"1.png",
@@ -18,21 +19,52 @@ function cualImagen( fila, col ){
 	return "img/" + imagenes[ pos % 10 ];
 }
 
+/* Crea el elemento div para una casilla */
 function htmlCarta( fila, col ){
 	return '<div><img src="' + cualImagen(fila,col) + '" /></div>';
 }
 
+/* Crea el HTML para el tablero y lo muestra */
 function repartir(){
 	var cartas="";
-	for( var fila = 0; fila <= 4; fila++){
-		for( col = 0; col <= 5; col++){
+	for( var fila = 0; fila < 4; fila++){
+	    cartas += "<div>";
+		for( col = 0; col < 5; col++){
 			cartas += htmlCarta( fila, col );
 		}
+	    cartas += "</div>";
 	}
 	
 	tab = document.getElementById("tablero");
 	tab.innerHTML = cartas;
 }	
+	var anterior;
+	var puntos=0;
+
+	/* Gira las cartas al hacerles click */
+	function girar(ev){
+		var actual = ev.target.firstChild; // carta donde hicieron click
+		actual.style.visibility = "visible";  // poner visible
+
+		var acerto = false;
+		if( anterior ){
+			if( anterior.src == actual.src ){
+				// Acertó
+				puntos++;
+				alert( "Lleva " + puntos );
+				anterior = null;
+				acerto = true;
+			} else {
+				// Falló
+				anterior.style.visibility = "hidden";
+			}
+		}
+		
+		if( acerto )
+		  anterior = null;
+		else
+		  anterior = actual;
+	}
 	
 	</script>
 	<style>
@@ -41,18 +73,20 @@ function repartir(){
 	visibility: hidden;
 }	
 
-#tablero div
+#tablero div div
 {
 	background-color: indigo;
 	padding: 4px;
 	border-width: 5px;
+	border-color: white;
 	margin: 8px;
+	display: inline-block;
 }
 	</style>
 	</head>
 	<body>
 	<button onclick="repartir()">Repartir</button>
-	<div id="tablero"></div>
+	<div id="tablero"  onclick="girar(event)"></div>
 	<div id="puntaje"></div>
 	</body>
 </html>
